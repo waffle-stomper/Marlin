@@ -374,6 +374,10 @@ void servo_init()
 
 void setup()
 {
+#ifdef DISABLE_JTAG
+  MCUCR = 0x80;
+  MCUCR = 0x80;
+#endif
   setup_killpin();
   setup_powerhold();
   MYSERIAL.begin(BAUDRATE);
