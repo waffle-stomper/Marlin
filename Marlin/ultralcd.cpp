@@ -357,10 +357,10 @@ static void lcd_move_x()
     if (encoderPosition != 0)
     {
         current_position[X_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (current_position[X_AXIS] < X_MIN_POS)
-            current_position[X_AXIS] = X_MIN_POS;
-        if (current_position[X_AXIS] > X_MAX_POS)
-            current_position[X_AXIS] = X_MAX_POS;
+        if (current_position[X_AXIS] < min_pos[0])
+            current_position[X_AXIS] = min_pos[0];
+        if (current_position[X_AXIS] > max_pos[0])
+            current_position[X_AXIS] = max_pos[0];
         encoderPosition = 0;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600, active_extruder);
         lcdDrawUpdate = 1;
@@ -381,10 +381,10 @@ static void lcd_move_y()
     if (encoderPosition != 0)
     {
         current_position[Y_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (current_position[Y_AXIS] < Y_MIN_POS)
-            current_position[Y_AXIS] = Y_MIN_POS;
-        if (current_position[Y_AXIS] > Y_MAX_POS)
-            current_position[Y_AXIS] = Y_MAX_POS;
+        if (current_position[Y_AXIS] < min_pos[1])
+            current_position[Y_AXIS] = min_pos[1];
+        if (current_position[Y_AXIS] > max_pos[1])
+            current_position[Y_AXIS] = max_pos[1];
         encoderPosition = 0;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600, active_extruder);
         lcdDrawUpdate = 1;
@@ -405,10 +405,10 @@ static void lcd_move_z()
     if (encoderPosition != 0)
     {
         current_position[Z_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (current_position[Z_AXIS] < Z_MIN_POS)
-            current_position[Z_AXIS] = Z_MIN_POS;
-        if (current_position[Z_AXIS] > Z_MAX_POS)
-            current_position[Z_AXIS] = Z_MAX_POS;
+        if (current_position[Z_AXIS] < min_pos[2])
+            current_position[Z_AXIS] = min_pos[2];
+        if (current_position[Z_AXIS] > max_pos[2])
+            current_position[Z_AXIS] = max_pos[2];
         encoderPosition = 0;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 60, active_extruder);
         lcdDrawUpdate = 1;
