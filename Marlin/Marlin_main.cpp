@@ -1294,10 +1294,10 @@ void process_commands()
                                                 // Let's see if X and Y are homed and probe is inside bed area.
           if(code_seen(axis_codes[Z_AXIS])) {
             if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= X_MIN_POS) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= X_MAX_POS) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= Y_MIN_POS) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= Y_MAX_POS)) {
+              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= min_pos[0]) \
+              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= max_pos[0]) \
+              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= min_pos[1]) \
+              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= max_pos[1])) {
 
               current_position[Z_AXIS] = 0;
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);			  

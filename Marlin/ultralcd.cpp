@@ -461,10 +461,10 @@ static void lcd_move_x()
     if (encoderPosition != 0)
     {
         current_position[X_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (min_software_endstops && current_position[X_AXIS] < X_MIN_POS)
-            current_position[X_AXIS] = X_MIN_POS;
-        if (max_software_endstops && current_position[X_AXIS] > X_MAX_POS)
-            current_position[X_AXIS] = X_MAX_POS;
+        if (min_software_endstops && current_position[X_AXIS] < min_pos[0])
+            current_position[X_AXIS] = min_pos[0];
+        if (max_software_endstops && current_position[X_AXIS] > max_pos[0])
+            current_position[X_AXIS] = max_pos[0];
         encoderPosition = 0;
         #ifdef DELTA
         calculate_delta(current_position);
@@ -490,10 +490,10 @@ static void lcd_move_y()
     if (encoderPosition != 0)
     {
         current_position[Y_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (min_software_endstops && current_position[Y_AXIS] < Y_MIN_POS)
-            current_position[Y_AXIS] = Y_MIN_POS;
-        if (max_software_endstops && current_position[Y_AXIS] > Y_MAX_POS)
-            current_position[Y_AXIS] = Y_MAX_POS;
+        if (min_software_endstops && current_position[Y_AXIS] < min_pos[1])
+            current_position[Y_AXIS] = min_pos[1];
+        if (max_software_endstops && current_position[Y_AXIS] > max_pos[1])
+            current_position[Y_AXIS] = max_pos[1];
         encoderPosition = 0;
         #ifdef DELTA
         calculate_delta(current_position);
@@ -519,10 +519,10 @@ static void lcd_move_z()
     if (encoderPosition != 0)
     {
         current_position[Z_AXIS] += float((int)encoderPosition) * move_menu_scale;
-        if (min_software_endstops && current_position[Z_AXIS] < Z_MIN_POS)
-            current_position[Z_AXIS] = Z_MIN_POS;
-        if (max_software_endstops && current_position[Z_AXIS] > Z_MAX_POS)
-            current_position[Z_AXIS] = Z_MAX_POS;
+        if (min_software_endstops && current_position[Z_AXIS] < min_pos[2])
+            current_position[Z_AXIS] = min_pos[2];
+        if (max_software_endstops && current_position[Z_AXIS] > max_pos[2])
+            current_position[Z_AXIS] = max_pos[2];
         encoderPosition = 0;
         #ifdef DELTA
         calculate_delta(current_position);
