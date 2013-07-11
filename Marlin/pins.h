@@ -1284,6 +1284,9 @@
 
 #define LARGE_FLASH        true
 
+//Disable JTAG pins so they can be used for the Extrudrboard
+#define DISABLE_JTAG       true
+
 #define X_STEP_PIN          0
 #define X_DIR_PIN           1
 #define X_ENABLE_PIN       39
