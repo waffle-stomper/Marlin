@@ -726,12 +726,13 @@ void tp_init()
   #if defined(HEATER_BED_PIN) && (HEATER_BED_PIN > -1) 
     SET_OUTPUT(HEATER_BED_PIN);
   #endif  
-  #if defined(FAN_PIN) && (FAN_PIN > -1) 
-    SET_OUTPUT(FAN_PIN);
+  #if defined(FAN_PIN) && (FAN_PIN > -1)  
     #ifdef FAST_PWM_FAN
+    SET_OUTPUT(FAN_PIN);
     setPwmFrequency(FAN_PIN, 1); // No prescaling. Pwm frequency = F_CPU/256/8
     #endif
     #ifdef FAN_SOFT_PWM
+    SET_OUTPUT(FAN_PIN);
     soft_pwm_fan = fanSpeedSoftPwm / 2;
     #endif
   #endif  
