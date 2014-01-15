@@ -1577,6 +1577,13 @@
 #define KILL_PIN           -1
 #define ALARM_PIN          -1
 
+#define DAC_STEPPER_CURRENT
+#define DAC_STEPPER_ADDRESS	0
+#define DAC_STEPPER_ORDER 	{3,2,1,0}
+#define DAC_STEPPER_MAX 	3520
+#define DAC_STEPPER_VREF 	1 //internal Vref, gain 1x = 2.048V
+#define DAC_STEPPER_GAIN	0
+
 #ifdef ULTRA_LCD
   #define BEEPER -1
 
