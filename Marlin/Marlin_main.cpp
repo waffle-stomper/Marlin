@@ -166,8 +166,10 @@
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M666 - set delta endstop adjustemnt
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
-// M907 - Set digital trimpot motor current using axis codes.
-// M908 - Control digital trimpot directly.
+// M907 - Set digital trimpot/DAC motor current using axis codes.
+// M908 - Control digital trimpot/DAC directly.
+// M909 - Print digipot/DAC current value
+// M910 - Commit digipot/DAC value to external EEPROM
 // M350 - Set microstepping mode.
 // M351 - Toggle MS1 MS2 pins directly.
 // M928 - Start SD logging (M928 filename.g) - ended by M29
@@ -480,6 +482,9 @@ void setup()
   tp_init();    // Initialize temperature loop
   plan_init();  // Initialize planner;
   watchdog_init();
+#ifdef DAC_STEPPER_CURRENT
+  dac_init(); //Initialize DAC to set stepper current
+#endif
   st_init();    // Initialize stepper, this enables interrupts!
   setup_photpin();
   servo_init();
@@ -2820,7 +2825,7 @@ void process_commands()
     break;
     #endif //DUAL_X_CARRIAGE         
 
-    case 907: // M907 Set digital trimpot motor current using axis codes.
+    case 907: // M907 Set digital trimpot/DAC motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) digipot_current(i,code_value());
@@ -2836,15 +2841,40 @@ void process_commands()
       #ifdef MOTOR_CURRENT_PWM_E_PIN
         if(code_seen('E')) digipot_current(2, code_value());
       #endif
+      #ifdef DAC_STEPPER_CURRENT
+         if(code_seen('S')) {for(int i=0;i<=4;i++) dac_current_percent(i,code_value()); break;}
+         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) dac_current_percent(i,code_value());
+      #endif
     }
     break;
-    case 908: // M908 Control digital trimpot directly.
+    case 908: // M908 Control digital trimpot/DAC directly.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
         uint8_t channel,current;
         if(code_seen('P')) channel=code_value();
         if(code_seen('S')) current=code_value();
         digitalPotWrite(channel, current);
+      #endif
+      #ifdef DAC_STEPPER_CURRENT
+        uint8_t channel=-1;
+        uint16_t dac_val=0;
+        if(code_seen('P')) channel=code_value();
+        if(code_seen('S')) dac_val=code_value();
+        dac_current_raw(channel, dac_val);
+      #endif
+    }
+    break;
+    case 909: // M909 Print digipot/DAC current value
+    {
+      #ifdef DAC_STEPPER_CURRENT
+        dac_print_values();
+      #endif
+    }
+    break;
+    case 910: // M910 Commit digipot/DAC value to external EEPROM
+    {
+      #ifdef DAC_STEPPER_CURRENT
+        dac_commit_eeprom();
       #endif
     }
     break;
