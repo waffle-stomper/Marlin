@@ -142,6 +142,7 @@
 // M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
 // M210 - set travel soft minimum
 // M211 - set travel soft maximum
+// M212 - Set probe offset for bed leveling
 // M218 - set hotend offset (in mm): T<extruder_number> X<offset_on_X> Y<offset_on_Y>
 // M220 S<factor in percent>- set speed factor override percentage
 // M221 S<factor in percent>- set extrude factor override percentage
@@ -198,7 +199,6 @@ float endstop_adj[3]={0,0,0};
 float min_pos[3] = { X_MIN_POS_DEFAULT, Y_MIN_POS_DEFAULT, Z_MIN_POS_DEFAULT };
 float max_pos[3] = { X_MAX_POS_DEFAULT, Y_MAX_POS_DEFAULT, Z_MAX_POS_DEFAULT };
 bool axis_known_position[3] = {false, false, false};
-float zprobe_zoffset;
 
 // Extruder offset
 #if EXTRUDERS > 1
@@ -793,6 +793,10 @@ bool extruder_duplication_enabled = false; // used in mode 2
 #endif //DUAL_X_CARRIAGE    
 float base_min_pos[3] = { X_MIN_POS_DEFAULT, Y_MIN_POS_DEFAULT, Z_MIN_POS_DEFAULT };
 float base_max_pos[3] = { X_MAX_POS_DEFAULT, Y_MAX_POS_DEFAULT, Z_MAX_POS_DEFAULT };
+#ifdef ENABLE_AUTO_BED_LEVELING
+float bed_level_probe_offset[3] = {X_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT,
+	Y_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT, -Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT};
+#endif
 
 static void axis_is_at_home(int axis) {
 #ifdef DUAL_X_CARRIAGE
@@ -837,7 +841,7 @@ static void set_bed_level_equation_lsq(double *plane_equation_coefficients)
     current_position[Z_AXIS] = corrected_position.z;
 
     // but the bed at 0 so we don't go below it.
-    current_position[Z_AXIS] = zprobe_zoffset; // in the lsq we reach here after raising the extruder due to the loop structure
+    current_position[Z_AXIS] = -bed_level_probe_offset[2]; // in the lsq we reach here after raising the extruder due to the loop structure
 
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 }
@@ -873,7 +877,7 @@ static void set_bed_level_equation(float z_at_xLeft_yFront, float z_at_xRight_yF
     current_position[Z_AXIS] = corrected_position.z;
 
     // but the bed at 0 so we don't go below it.
-    current_position[Z_AXIS] = zprobe_zoffset;
+    current_position[Z_AXIS] = -bed_level_probe_offset[2];
 
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 }
@@ -1277,8 +1281,8 @@ void process_commands()
           }
         #else                      // Z Safe mode activated. 
           if(home_all_axis) {
-            destination[X_AXIS] = round(Z_SAFE_HOMING_X_POINT - X_PROBE_OFFSET_FROM_EXTRUDER);
-            destination[Y_AXIS] = round(Z_SAFE_HOMING_Y_POINT - Y_PROBE_OFFSET_FROM_EXTRUDER);
+            destination[X_AXIS] = round(Z_SAFE_HOMING_X_POINT - bed_level_probe_offset[0]);
+            destination[Y_AXIS] = round(Z_SAFE_HOMING_Y_POINT - bed_level_probe_offset[1]);
             destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
             feedrate = XY_TRAVEL_SPEED;
             current_position[Z_AXIS] = 0;
@@ -1294,10 +1298,10 @@ void process_commands()
                                                 // Let's see if X and Y are homed and probe is inside bed area.
           if(code_seen(axis_codes[Z_AXIS])) {
             if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= min_pos[0]) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= max_pos[0]) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= min_pos[1]) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= max_pos[1])) {
+              && (current_position[X_AXIS]+bed_level_probe_offset[0] >= min_pos[0]) \
+              && (current_position[X_AXIS]+bed_level_probe_offset[0] <= max_pos[0]) \
+              && (current_position[Y_AXIS]+bed_level_probe_offset[1] >= min_pos[1]) \
+              && (current_position[Y_AXIS]+bed_level_probe_offset[1] <= max_pos[1])) {
 
               current_position[Z_AXIS] = 0;
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);			  
@@ -1329,7 +1333,7 @@ void process_commands()
       }
       #ifdef ENABLE_AUTO_BED_LEVELING
         if((home_all_axis) || (code_seen(axis_codes[Z_AXIS]))) {
-          current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
+          current_position[Z_AXIS] += -bed_level_probe_offset[2];  //Add Z_Probe offset (the distance is negative)
         }
       #endif
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -1417,7 +1421,7 @@ void process_commands()
                 }
                 
                 
-                do_blocking_move_to(xProbe - X_PROBE_OFFSET_FROM_EXTRUDER, yProbe - Y_PROBE_OFFSET_FROM_EXTRUDER, current_position[Z_AXIS]);
+                do_blocking_move_to(xProbe - bed_level_probe_offset[0], yProbe - bed_level_probe_offset[1], current_position[Z_AXIS]);
     
                 engage_z_probe();   // Engage Z Servo endstop if available
                 run_z_probe();
@@ -1461,7 +1465,7 @@ void process_commands()
             
             // prob 1
             do_blocking_move_to(current_position[X_AXIS], current_position[Y_AXIS], Z_RAISE_BEFORE_PROBING);
-            do_blocking_move_to(LEFT_PROBE_BED_POSITION - X_PROBE_OFFSET_FROM_EXTRUDER, BACK_PROBE_BED_POSITION - Y_PROBE_OFFSET_FROM_EXTRUDER, current_position[Z_AXIS]);
+            do_blocking_move_to(LEFT_PROBE_BED_POSITION - bed_level_probe_offset[0], BACK_PROBE_BED_POSITION - bed_level_probe_offset[1], current_position[Z_AXIS]);
 
             engage_z_probe();   // Engage Z Servo endstop if available
             run_z_probe();
@@ -1478,7 +1482,7 @@ void process_commands()
 
             // prob 2
             do_blocking_move_to(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
-            do_blocking_move_to(LEFT_PROBE_BED_POSITION - X_PROBE_OFFSET_FROM_EXTRUDER, FRONT_PROBE_BED_POSITION - Y_PROBE_OFFSET_FROM_EXTRUDER, current_position[Z_AXIS]);
+            do_blocking_move_to(LEFT_PROBE_BED_POSITION - bed_level_probe_offset[0], FRONT_PROBE_BED_POSITION - bed_level_probe_offset[1], current_position[Z_AXIS]);
 
             engage_z_probe();   // Engage Z Servo endstop if available
             run_z_probe();
@@ -1496,7 +1500,7 @@ void process_commands()
             // prob 3
             do_blocking_move_to(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
             // the current position will be updated by the blocking move so the head will not lower on this next call.
-            do_blocking_move_to(RIGHT_PROBE_BED_POSITION - X_PROBE_OFFSET_FROM_EXTRUDER, FRONT_PROBE_BED_POSITION - Y_PROBE_OFFSET_FROM_EXTRUDER, current_position[Z_AXIS]);
+            do_blocking_move_to(RIGHT_PROBE_BED_POSITION - bed_level_probe_offset[0], FRONT_PROBE_BED_POSITION - bed_level_probe_offset[1], current_position[Z_AXIS]);
 
             engage_z_probe();   // Engage Z Servo endstop if available
             run_z_probe();
@@ -1523,8 +1527,8 @@ void process_commands()
             // The Z height on homing is measured by Z-Probe, but the probe is quite far from the hotend. 
             // When the bed is uneven, this height must be corrected.
             real_z = float(st_get_position(Z_AXIS))/axis_steps_per_unit[Z_AXIS];  //get the real Z (since the auto bed leveling is already correcting the plane)
-            x_tmp = current_position[X_AXIS] + X_PROBE_OFFSET_FROM_EXTRUDER;
-            y_tmp = current_position[Y_AXIS] + Y_PROBE_OFFSET_FROM_EXTRUDER;
+            x_tmp = current_position[X_AXIS] + bed_level_probe_offset[0];
+            y_tmp = current_position[Y_AXIS] + bed_level_probe_offset[1];
             z_tmp = current_position[Z_AXIS];
 
             apply_rotation_xyz(plan_bed_level_matrix, x_tmp, y_tmp, z_tmp);         //Apply the correction sending the probe offset
@@ -2356,6 +2360,18 @@ void process_commands()
         }
       }
     }break;
+    #ifdef ENABLE_AUTO_BED_LEVELING
+	case 212: //M212 - Set probe offset for bed leveling
+	{
+      for(int8_t i=0; i < 3; i++)
+      {
+        if(code_seen(axis_codes[i]))
+        {
+          bed_level_probe_offset[i] = code_value();
+        }
+      }
+    }break;
+    #endif
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
       if(code_seen('S'))
