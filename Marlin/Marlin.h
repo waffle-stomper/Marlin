@@ -210,7 +210,6 @@ extern float endstop_adj[3];
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
-extern float zprobe_zoffset;
 extern int fanSpeed;
 #ifdef BARICUDA
 extern int ValvePressure;
@@ -236,4 +235,8 @@ extern uint8_t active_extruder;
 
 extern float base_min_pos[];
 extern float base_max_pos[];
+
+#ifdef ENABLE_AUTO_BED_LEVELING
+extern float bed_level_probe_offset[];
+#endif
 #endif

@@ -70,7 +70,9 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,absPreheatHotendTemp);
   EEPROM_WRITE_VAR(i,absPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
-  EEPROM_WRITE_VAR(i,zprobe_zoffset);
+  EEPROM_WRITE_VAR(i,bed_level_probe_offset[0]);
+  EEPROM_WRITE_VAR(i,bed_level_probe_offset[1]);
+  EEPROM_WRITE_VAR(i,bed_level_probe_offset[2]);
   #ifdef PIDTEMP
     EEPROM_WRITE_VAR(i,Kp);
     EEPROM_WRITE_VAR(i,Ki);
@@ -187,6 +189,15 @@ void Config_PrintSettings()
     SERIAL_ECHOPAIR(" Y" , base_max_pos[1] );
     SERIAL_ECHOPAIR(" Z" , base_max_pos[2] );
     SERIAL_ECHOLN("");
+#ifdef ENABLE_AUTO_BED_LEVELING
+    SERIAL_ECHO_START;
+    SERIAL_ECHOLNPGM("Bed probe offset (mm):");
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPAIR("  M212 X" , bed_level_probe_offset[0] );
+    SERIAL_ECHOPAIR(" Y" , bed_level_probe_offset[1] );
+    SERIAL_ECHOPAIR(" Z" , bed_level_probe_offset[2] );
+    SERIAL_ECHOLN("");
+#endif
 } 
 #endif
 
@@ -231,7 +242,9 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,absPreheatHotendTemp);
         EEPROM_READ_VAR(i,absPreheatHPBTemp);
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
-        EEPROM_READ_VAR(i,zprobe_zoffset);
+        EEPROM_READ_VAR(i,bed_level_probe_offset[0]);
+        EEPROM_READ_VAR(i,bed_level_probe_offset[1]);
+        EEPROM_READ_VAR(i,bed_level_probe_offset[2]);
         #ifndef PIDTEMP
         float Kp,Ki,Kd;
         #endif
@@ -301,7 +314,9 @@ void Config_ResetDefault()
     absPreheatFanSpeed = ABS_PREHEAT_FAN_SPEED;
 #endif
 #ifdef ENABLE_AUTO_BED_LEVELING
-    zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
+    bed_level_probe_offset[0] = X_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT;
+    bed_level_probe_offset[1] = Y_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT;
+    bed_level_probe_offset[2] = Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT;
 #endif
 #ifdef DOGLCD
     lcd_contrast = DEFAULT_LCD_CONTRAST;
