@@ -55,7 +55,9 @@ static void lcd_control_menu();
 static void lcd_control_temperature_menu();
 static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
+#ifndef DISABLE_LCD_MOTION_MENU
 static void lcd_control_motion_menu();
+#endif
 #ifdef DOGLCD
 static void lcd_set_contrast();
 #endif
@@ -615,7 +617,9 @@ static void lcd_control_menu()
     START_MENU();
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
     MENU_ITEM(submenu, MSG_TEMPERATURE, lcd_control_temperature_menu);
+#ifndef DISABLE_LCD_MOTION_MENU
     MENU_ITEM(submenu, MSG_MOTION, lcd_control_motion_menu);
+#endif
 #ifdef DOGLCD
 //    MENU_ITEM_EDIT(int3, MSG_CONTRAST, &lcd_contrast, 0, 63);
     MENU_ITEM(submenu, MSG_CONTRAST, lcd_set_contrast);
@@ -702,6 +706,7 @@ static void lcd_control_temperature_preheat_abs_settings_menu()
     END_MENU();
 }
 
+#ifndef DISABLE_LCD_MOTION_MENU
 static void lcd_control_motion_menu()
 {
     START_MENU();
@@ -731,6 +736,7 @@ static void lcd_control_motion_menu()
 #endif
     END_MENU();
 }
+#endif
 
 #ifdef DOGLCD
 static void lcd_set_contrast()
