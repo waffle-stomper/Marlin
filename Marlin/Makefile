@@ -4,8 +4,9 @@
 # Arduino 0011 Makefile
 # Arduino adaptation by mellis, eighthave, oli.keller
 # Marlin adaption by Daid
+# Printrbot updates by @PxT
 #
-# This has been tested with Arduino 0022.
+# This has been tested with Arduino 1.05.
 #
 # This makefile allows you to build sketches from the command line
 # without the Arduino environment (or Java).
@@ -37,14 +38,16 @@
 # from the commandline with "make HARDWARE_MOTHERBOARD=71" for example
 
 # This defined the board you are compiling for (see Configuration.h for the options)
-HARDWARE_MOTHERBOARD ?= 11
+HARDWARE_MOTHERBOARD ?= 81
 
 # Arduino source install directory, and version number
-ARDUINO_INSTALL_DIR  ?= ../../arduino-0022
-ARDUINO_VERSION      ?= 22
+# On MacOS this will be something like /Applications/Arduino.app/Contents/Resources/Java/
+# On Windows it might be something like C:\Arduino
+ARDUINO_INSTALL_DIR  ?= /Applications/Arduino.app/Contents/Resources/Java/
+ARDUINO_VERSION      ?= 105
 
 # You can optionally set a path to the avr-gcc tools. Requires a trailing slash. (ex: /usr/local/avr-gcc/bin)
-AVR_TOOLS_PATH ?=
+AVR_TOOLS_PATH ?= /Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/
 
 #Programmer configuration
 UPLOAD_RATE        ?= 115200
@@ -204,10 +207,16 @@ else
 HARDWARE_SUB_VARIANT ?= standard
 VPATH += $(HARDWARE_DIR)/$(HARDWARE_VARIANT)/variants/$(HARDWARE_SUB_VARIANT)
 endif
+ifeq ($(MCU), at90usb1286)
+VPATH += $(ARDUINO_INSTALL_DIR)/hardware/teensy/cores/at90usb1286/
+endif
 SRC = wiring.c \
 	wiring_analog.c wiring_digital.c \
 	wiring_pulse.c \
 	wiring_shift.c WInterrupts.c
+ifeq ($(MCU), at90usb1286)
+SRC = wiring.c
+endif
 CXXSRC = WMath.cpp WString.cpp Print.cpp Marlin_main.cpp	\
 	MarlinSerial.cpp Sd2Card.cpp SdBaseFile.cpp SdFatUtil.cpp	\
 	SdFile.cpp SdVolume.cpp motion_control.cpp planner.cpp		\
@@ -219,7 +228,11 @@ CXXSRC += LiquidCrystal.cpp ultralcd.cpp SPI.cpp Servo.cpp Tone.cpp
 ifeq ($(shell [ $(ARDUINO_VERSION) -ge 100 ] && echo true), true)
 CXXSRC += main.cpp
 else
+ifeq ($(HARDWARE_VARIANT), Teensy)
+SRC += pins_teensy.c 
+else
 SRC += pins_arduino.c main.c
+endif
 endif
 
 FORMAT = ihex
