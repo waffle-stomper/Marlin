@@ -57,9 +57,10 @@
 // 77 = 3Drag Controller
 // 8  = Teensylu
 // 80 = Rumba
-// 81 = Printrboard (AT90USB1286)
+// 81 = Printrboard rev A-E (AT90USB1286)
 // 82 = Brainwave (AT90USB646)
 // 83 = SAV Mk-I (AT90USB1286)
+// 84 = Printrboard rev F (AT90USB1286)
 // 9  = Gen3+
 // 70 = Megatronics
 // 701= Megatronics v2.0
@@ -70,7 +71,7 @@
 // 21 = Elefu Ra Board (v3)
 
 #ifndef MOTHERBOARD
-#define MOTHERBOARD 81
+#define MOTHERBOARD 84
 #endif
 
 // Define this to set a custom name for your generic Mendel,
