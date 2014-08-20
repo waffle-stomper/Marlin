@@ -32,7 +32,7 @@
 #elif MOTHERBOARD == 77
 	#define MACHINE_NAME "3Drag"
 	#define FIRMWARE_URL "http://3dprint.elettronicain.it/"
-#elif MOTHERBOARD == 81
+#elif MOTHERBOARD == 81 | MOTHERBOARD == 84
 	#define MACHINE_NAME "Printrbot"
 	#define FIRMWARE_URL "http://printrbot.com"
 #else
