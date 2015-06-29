@@ -433,6 +433,11 @@ void servo_init()
 void setup()
 {
 #ifdef DISABLE_JTAG
+  // From the AT90USB1286 data sheet:
+  // When bit 7 of the MCU Control Register is set to 1 the JTAG interface is disabled. 
+  // In order to avoid unintentional disabling or enabling of the JTAG interface the
+  // application software must write this bit to the desired value twice within four
+  // cycles to change its value
   MCUCR = 0x80;
   MCUCR = 0x80;
 #endif
