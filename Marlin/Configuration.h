@@ -333,7 +333,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   // these are the offsets to the prob relative to the extruder tip (Hotend - Probe)
   #define X_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 5
   #define Y_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 0
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT -4
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 0
 
   #define Z_RAISE_BEFORE_HOMING 4       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
@@ -396,8 +396,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // default settings
 
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,94.5}
-#define DEFAULT_MAX_FEEDRATE          {100, 100, 2, 14}    // (mm/sec)    
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,96}
+#define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}    // (mm/sec)    
 #define DEFAULT_MAX_ACCELERATION      {2000,2000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
 
 #define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
