@@ -324,14 +324,15 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 
-  // these are the positions on the bed to do the probing
-  #define LEFT_PROBE_BED_POSITION 10
-  #define RIGHT_PROBE_BED_POSITION X_MAX_LENGTH-10
-  #define BACK_PROBE_BED_POSITION Y_MAX_LENGTH-10
-  #define FRONT_PROBE_BED_POSITION 10
+  // these are the positions on the bed to do the probing. 
+  // NOTE: if the absolute value of the probe offset (x,y directions) is > 10, we have to move probe points inboard on that axis.
+  #define LEFT_PROBE_BED_POSITION (bed_level_probe_offset[0] <= 10 ? 10 : bed_level_probe_offset[0])
+  #define RIGHT_PROBE_BED_POSITION (bed_level_probe_offset[0] >= -10 ? X_MAX_LENGTH - 10 : X_MAX_LENGTH + bed_level_probe_offset[0])
+  #define BACK_PROBE_BED_POSITION (bed_level_probe_offset[1] >= -10 ? Y_MAX_LENGTH - 10 : Y_MAX_LENGTH + bed_level_probe_offset[1]) 
+  #define FRONT_PROBE_BED_POSITION (bed_level_probe_offset[1] <= 10 ? 10 : bed_level_probe_offset[1])
 
-  // these are the offsets to the prob relative to the extruder tip (Hotend - Probe)
-  #define X_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 5
+  // these are the offsets to the prob relative to the extruder tip (Hotend - Probe).  Default below prevents Metal Plus from probing off-bed.
+  #define X_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 20
   #define Y_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 0
   #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 0
 
