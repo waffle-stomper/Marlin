@@ -22,7 +22,7 @@
 #endif
 
 #define PROTOCOL_VERSION "1.0"
-#define FIRMWARE_NAME "PB Marlin Rev F v4"
+#define FIRMWARE_NAME "PB Marlin Rev F v5"
 
 #if MOTHERBOARD == 7 || MOTHERBOARD == 71 || MOTHERBOARD == 72
 	#define MACHINE_NAME "Ultimaker"
