@@ -1532,7 +1532,7 @@
 #define E0_DIR_PIN          7
 #define E0_ENABLE_PIN      19
 
-// E1 STEP, ENABLE differ in Printrboard versions, below:
+// E1 STEP, DIR differ in Printrboard versions, below:
 #define E1_ENABLE_PIN      44
 
 #define E2_STEP_PIN        26
