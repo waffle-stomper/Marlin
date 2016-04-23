@@ -75,9 +75,7 @@
 // extruder temperature is above/below EXTRUDER_AUTO_FAN_TEMPERATURE.
 // Multiple extruders can be assigned to the same pin in which case 
 // the fan will turn on when any selected extruder is above the threshold.
-#define EXTRUDER_0_AUTO_FAN_PIN   -1
-#define EXTRUDER_1_AUTO_FAN_PIN   -1
-#define EXTRUDER_2_AUTO_FAN_PIN   -1
+
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
@@ -203,7 +201,7 @@
 // As the x-carriages are independent we can now account for any relative Z offset
 #define EXTRUDER1_Z_OFFSET 0.0           // z offset relative to extruder 0
 
-// Default settings in "Auto-park Mode" 
+// Default settings in "Auto-park Mode"
 #define TOOLCHANGE_PARK_ZLIFT   0.2      // the distance to raise Z axis when parking an extruder
 #define TOOLCHANGE_UNPARK_ZLIFT 1        // the distance to raise Z axis when unparking an extruder
 
@@ -268,6 +266,15 @@
 // Motor Current setting (Only functional when motor driver current ref pins are connected to a digital trimpot on supported boards)
 #define DIGIPOT_MOTOR_CURRENT {135,135,135,135,135} // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
 
+#if defined(PB_PLAY)
+  #define DAC_STEPPER_CURRENT {70,70,70,65,65}
+#elif defined(PB_SIMPLE)
+  #define DAC_STEPPER_CURRENT {50,50,60,60,60}
+#elif defined(PB_PLUS)
+  #define DAC_STEPPER_CURRENT {60,65,60,65,65}
+#else
+  #define DAC_STEPPER_CURRENT {50,50,60,60,60}
+#endif
 
 //===========================================================================
 //=============================Additional Features===========================
