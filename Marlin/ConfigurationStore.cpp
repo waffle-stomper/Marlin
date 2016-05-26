@@ -37,7 +37,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // the default values are used whenever there is a change to the data, to prevent
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
-#define EEPROM_VERSION "V11"
+#define EEPROM_VERSION "V12"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -70,9 +70,13 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,absPreheatHotendTemp);
   EEPROM_WRITE_VAR(i,absPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
+
+  #ifdef ENABLE_AUTO_BED_LEVELING
   EEPROM_WRITE_VAR(i,bed_level_probe_offset[0]);
   EEPROM_WRITE_VAR(i,bed_level_probe_offset[1]);
   EEPROM_WRITE_VAR(i,bed_level_probe_offset[2]);
+  #endif
+
   #ifdef PIDTEMP
     EEPROM_WRITE_VAR(i,Kp);
     EEPROM_WRITE_VAR(i,Ki);
@@ -193,9 +197,12 @@ void Config_PrintSettings()
     SERIAL_ECHO_START;
     SERIAL_ECHOLNPGM("Bed probe offset (mm):");
     SERIAL_ECHO_START;
+
+    #ifdef ENABLE_AUTO_BED_LEVELING
     SERIAL_ECHOPAIR("  M212 X" , bed_level_probe_offset[0] );
     SERIAL_ECHOPAIR(" Y" , bed_level_probe_offset[1] );
     SERIAL_ECHOPAIR(" Z" , bed_level_probe_offset[2] );
+    #endif
     SERIAL_ECHOLN("");
 #endif
 } 
@@ -242,9 +249,12 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,absPreheatHotendTemp);
         EEPROM_READ_VAR(i,absPreheatHPBTemp);
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
+
+        #ifdef ENABLE_AUTO_BED_LEVELING
         EEPROM_READ_VAR(i,bed_level_probe_offset[0]);
         EEPROM_READ_VAR(i,bed_level_probe_offset[1]);
         EEPROM_READ_VAR(i,bed_level_probe_offset[2]);
+        #endif
         #ifndef PIDTEMP
         float Kp,Ki,Kd;
         #endif
@@ -271,6 +281,8 @@ void Config_RetrieveSettings()
     else
     {
         Config_ResetDefault();
+        // write settings to eeprom
+        Config_StoreSettings();
     }
     #ifdef EEPROM_CHITCHAT
       Config_PrintSettings();
