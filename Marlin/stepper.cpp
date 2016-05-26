@@ -70,6 +70,8 @@ volatile long endstops_stepsTotal,endstops_stepsDone;
 static volatile bool endstop_x_hit=false;
 static volatile bool endstop_y_hit=false;
 static volatile bool endstop_z_hit=false;
+static volatile bool endstop_e_hit=false;
+
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 bool abort_on_endstop_hit = false;
 #endif
@@ -83,6 +85,8 @@ static bool old_y_min_endstop=false;
 static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
+static bool old_e_min_endstop=false;
+static bool old_e_max_endstop=false;
 
 static bool check_endstops = true;
 
@@ -173,7 +177,7 @@ asm volatile ( \
 
 void checkHitEndstops()
 {
- if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
+ if( endstop_x_hit || endstop_y_hit || endstop_z_hit || endstop_e_hit) {
    SERIAL_ECHO_START;
    SERIAL_ECHOPGM(MSG_ENDSTOPS_HIT);
    if(endstop_x_hit) {
@@ -188,10 +192,15 @@ void checkHitEndstops()
      SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/axis_steps_per_unit[Z_AXIS]);
      LCD_MESSAGEPGM(MSG_ENDSTOPS_HIT "Z");
    }
+   if(endstop_e_hit) {
+     SERIAL_ECHOPAIR(" E:",(float)endstops_trigsteps[E_AXIS]/axis_steps_per_unit[E_AXIS]);
+     LCD_MESSAGEPGM(MSG_ENDSTOPS_HIT "E");
+   }
    SERIAL_ECHOLN("");
    endstop_x_hit=false;
    endstop_y_hit=false;
    endstop_z_hit=false;
+   endstop_e_hit=false;
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
    if (abort_on_endstop_hit)
    {
@@ -211,6 +220,7 @@ void endstops_hit_on_purpose()
   endstop_x_hit=false;
   endstop_y_hit=false;
   endstop_z_hit=false;
+  endstop_e_hit=false;
 }
 
 void enable_endstops(bool check)
@@ -527,6 +537,39 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
     }
+    // E ------------------------------------------------------------
+      if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction
+        WRITE(E0_DIR_PIN, INVERT_E0_DIR);
+        count_direction[E_AXIS]=-1;
+        CHECK_ENDSTOPS
+        {
+          #if defined(E_MIN_PIN) && E_MIN_PIN > -1
+            bool e_min_endstop=(READ(E_MIN_PIN) != E_MIN_ENDSTOP_INVERTING);
+            if(e_min_endstop && old_e_min_endstop && (current_block->steps_e > 0)) {
+              endstops_trigsteps[E_AXIS] = count_position[E_AXIS];
+              endstop_e_hit=true;
+              step_events_completed = current_block->step_event_count;
+            }
+            old_e_min_endstop = e_min_endstop;
+          #endif
+        }
+      }
+      else { // +direction
+        WRITE(E0_DIR_PIN, !INVERT_E0_DIR);
+        count_direction[E_AXIS]=1;
+        CHECK_ENDSTOPS
+        {
+          #if defined(E_MAX_PIN) && E_MAX_PIN > -1
+            bool e_max_endstop=(READ(E_MAX_PIN) != E_MAX_ENDSTOP_INVERTING);
+            if(e_max_endstop && old_e_max_endstop && (current_block->steps_e > 0)) {
+              endstops_trigsteps[E_AXIS] = count_position[E_AXIS];
+              endstop_e_hit=true;
+              step_events_completed = current_block->step_event_count;
+            }
+            old_e_max_endstop = e_max_endstop;
+          #endif
+        }
+      }
 
     #ifndef ADVANCE
       if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction
@@ -865,6 +908,14 @@ void st_init()
     #endif
   #endif
 
+  #if defined(E_MIN_PIN) && E_MIN_PIN > -1
+    SET_INPUT(E_MIN_PIN);
+    #ifdef ENDSTOPPULLUP_EMIN
+      WRITE(E_MIN_PIN,HIGH);
+    #endif
+  #endif
+
+
   #if defined(X_MAX_PIN) && X_MAX_PIN > -1
     SET_INPUT(X_MAX_PIN);
     #ifdef ENDSTOPPULLUP_XMAX
@@ -886,6 +937,12 @@ void st_init()
     #endif
   #endif
 
+  #if defined(E_MAX_PIN) && E_MAX_PIN > -1
+    SET_INPUT(E_MAX_PIN);
+    #ifdef ENDSTOPPULLUP_EMAX
+      WRITE(E_MAX_PIN,HIGH);
+    #endif
+  #endif
 
   //Initialize Step Pins
   #if defined(X_STEP_PIN) && (X_STEP_PIN > -1)
