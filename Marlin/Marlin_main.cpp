@@ -2227,6 +2227,14 @@ void process_commands()
         SERIAL_PROTOCOLPGM(MSG_Z_MAX);
         SERIAL_PROTOCOLLN(((READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
+      #if defined(E_MIN_PIN) && E_MIN_PIN > -1
+        SERIAL_PROTOCOLPGM(MSG_E_MIN);
+        SERIAL_PROTOCOLLN(((READ(E_MIN_PIN)^E_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+      #endif
+      #if defined(E_MAX_PIN) && E_MAX_PIN > -1
+        SERIAL_PROTOCOLPGM(MSG_E_MAX);
+        SERIAL_PROTOCOLLN(((READ(E_MAX_PIN)^E_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+      #endif
       break;
       //TODO: update for all axis, use for loop
     #ifdef BLINKM  
