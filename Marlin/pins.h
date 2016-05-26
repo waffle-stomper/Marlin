@@ -131,18 +131,16 @@
 #define X_MAX_PIN -1
 #define Y_MIN_PIN -1
 #define Y_MAX_PIN 12
-#define E_MIN_PIN 28
-#define E_MAX_PIN 30
-
 
 #if defined(PB_MCF)
   #define Z_MAX_PIN 36
   #define Z_MIN_PIN -1
+  #define E_MIN_PIN 28
+  #define E_MAX_PIN 30
 #else
   #define Z_MAX_PIN -1
 #define Z_MIN_PIN 36
 #endif
-
 
 #define PBNEO_PIN 6
 
