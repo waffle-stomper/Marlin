@@ -227,7 +227,11 @@
 #define INVERT_E_STEP_PIN false
 
 //default stepper release if idle
-#define DEFAULT_STEPPER_DEACTIVE_TIME 60
+#if defined(PB_MCF)
+  #define DEFAULT_STEPPER_DEACTIVE_TIME 86400 // 24 hrs
+#else
+  #define DEFAULT_STEPPER_DEACTIVE_TIME 60 // 60 sec
+#endif
 
 #define DEFAULT_MINIMUMFEEDRATE       0.0     // minimum feedrate
 #define DEFAULT_MINTRAVELFEEDRATE     0.0
