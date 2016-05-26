@@ -112,9 +112,15 @@
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define HEATER_0_MAXTEMP 275
-#define HEATER_1_MAXTEMP 275
-#define HEATER_2_MAXTEMP 275
+
+#if defined(PB_MCF)
+  #define HEATER_0_MAXTEMP 100
+#else
+  #define HEATER_0_MAXTEMP 300
+#endif
+
+#define HEATER_1_MAXTEMP 285
+#define HEATER_2_MAXTEMP 285
 #define BED_MAXTEMP 150
 
 // If your bed has low resistance e.g. .6 ohm and throws the fuse you can duty cycle it to reduce the
@@ -193,9 +199,11 @@
 
 //this prevents dangerous Extruder moves, i.e. if the temperature is under the limit
 //can be software-disabled for whatever purposes by
+#if !defined(PB_MCF)
 #define PREVENT_DANGEROUS_EXTRUDE
 //if PREVENT_DANGEROUS_EXTRUDE is on, you can still disable (uncomment) very long bits of extrusion separately.
 #define PREVENT_LENGTHY_EXTRUDE
+#endif
 
 #define EXTRUDE_MINTEMP 170
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
@@ -224,9 +232,11 @@
   #define ENDSTOPPULLUP_XMAX
   #define ENDSTOPPULLUP_YMAX
   #define ENDSTOPPULLUP_ZMAX
+  #define ENDSTOPPULLUP_EMAX
   #define ENDSTOPPULLUP_XMIN
   #define ENDSTOPPULLUP_YMIN
   #define ENDSTOPPULLUP_ZMIN
+  #define ENDSTOPPULLUP_EMIN
 #endif
 
 // The pullups are needed if you directly connect a mechanical endswitch between the signal and ground pins.
@@ -236,6 +246,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 const bool X_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Y_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+const bool E_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+const bool E_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+
 //#define DISABLE_MAX_ENDSTOPS
 //#define DISABLE_MIN_ENDSTOPS
 
@@ -253,7 +266,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Disables axis when it's not being used.
 #define DISABLE_X false
 #define DISABLE_Y false
-#define DISABLE_Z true
+#define DISABLE_Z false
 #define DISABLE_E false // For all extruders
 
 #define INVERT_X_DIR true    // for Mendel set to false, for Orca set to true
@@ -267,7 +280,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Sets direction of endstops when homing; 1=MAX, -1=MIN
 #define X_HOME_DIR -1
 #define Y_HOME_DIR 1
-#define Z_HOME_DIR -1
+#if defined(PB_MCF)
+  #define Z_HOME_DIR 1
+#else
+  #define Z_HOME_DIR -1
+#endif
 
 #define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
 #define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
@@ -299,9 +316,13 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #define Y_MAX_POS_DEFAULT 250
   #define Z_MAX_POS_DEFAULT 254
 #elif defined(PB_MCF)
-  #define X_MAX_POS_DEFAULT 260
+  #define X_MAX_POS_DEFAULT 230
   #define Y_MAX_POS_DEFAULT 160
-  #define Z_MAX_POS_DEFAULT 69.50
+  #define Z_MAX_POS_DEFAULT 81
+
+  #define E_MAX_POS_DEFAULT 400
+  #define E_MIN_POS_DEFAULT 0
+
 #else
   #define X_MAX_POS_DEFAULT 152
   #define Y_MAX_POS_DEFAULT 152
@@ -314,7 +335,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_MAX_LENGTH (base_max_pos[2] - base_min_pos[2])
 //============================= Bed Auto Leveling ===========================
 
-#define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
+#if !defined(PB_MCF)
+  #define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
+#endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 
@@ -367,12 +390,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   // with accurate bed leveling, the bed is sampled in a ACCURATE_BED_LEVELING_POINTSxACCURATE_BED_LEVELING_POINTS grid and least squares solution is calculated
   // Note: this feature occupies 10'206 byte
   //#define ACCURATE_BED_LEVELING
-  
+
   #ifdef ACCURATE_BED_LEVELING
      // I wouldn't see a reason to go above 3 (=9 probing points on the bed)
     #define ACCURATE_BED_LEVELING_POINTS 2
   #endif
-  
+
 #endif
 
 // The position of the homing switches
@@ -391,10 +414,15 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define HOMING_FEEDRATE {50*60, 50*60, 4*60, 0}  // set the homing speeds (mm/min)
 
 // default settings
-
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,96}
-#define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {2000,2000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+#if defined(PB_MCF)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,406,406}
+  #define DEFAULT_MAX_FEEDRATE          {125, 125, 12, 14}    // (mm/sec)
+  #define DEFAULT_MAX_ACCELERATION      {200,200,30,3000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+#else
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,96}
+  #define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}    // (mm/sec)
+  #define DEFAULT_MAX_ACCELERATION      {2000,2000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+#endif
 
 #define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
@@ -436,20 +464,20 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define ABS_PREHEAT_FAN_SPEED 255   // Insert Value between 0 and 255
 
 //LCD and SD support
-#define ULTRA_LCD  //general lcd support, also 16x2
+//#define ULTRA_LCD  //general lcd support, also 16x2
 //#define DOGLCD  // Support for SPI LCD 128x64 (Controller ST7565R graphic Display Family)
 #define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)
 //#define ENCODER_PULSES_PER_STEP 1 // Increase if you have a high resolution encoder
 //#define ENCODER_STEPS_PER_MENU_ITEM 5 // Set according to ENCODER_PULSES_PER_STEP or your liking
-#define NEWPANEL
+//#define NEWPANEL
 
 //Uncomment the lines below to save program flash space
 #define DISABLE_LCD_MOTION_MENU
 #define DISABLE_PREHEAT_MENU
 
 //#define ULTIMAKERCONTROLLER //as available from the ultimaker online store.
-#define ULTIPANEL  //the ultipanel as on thingiverse
+//#define ULTIPANEL  //the ultipanel as on thingiverse
 
 // The MaKr3d Makr-Panel with graphic controller and SD support
 // http://reprap.org/wiki/MaKr3d_MaKrPanel
