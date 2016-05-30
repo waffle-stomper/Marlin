@@ -85,7 +85,7 @@
 //===========================================================================
 
 
-#if !defined(PB_MCF)
+#if !defined(PB_MCF) && !defined(PB_BOCUSINI)
 #define ENDSTOPS_ONLY_FOR_HOMING // If defined the endstops will only be used for homing
 #endif
 
@@ -281,6 +281,8 @@
   #define DAC_STEPPER_CURRENT {60,65,60,65,65}
 #elif defined(PB_MCF)
   #define DAC_STEPPER_CURRENT {20,20,20,20,20}
+#elif defined(PB_BOCUSINI)
+  #define DAC_STEPPER_CURRENT {70,70,60,60,60}
 #else
   #define DAC_STEPPER_CURRENT {50,50,60,60,60}
 #endif

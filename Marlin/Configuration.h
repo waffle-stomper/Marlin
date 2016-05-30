@@ -104,7 +104,13 @@
 // The minimal temperature defines the temperature below which the heater will not be enabled It is used
 // to check that the wiring to the thermistor is not broken.
 // Otherwise this would lead to the heater being powered on all the time.
-#define HEATER_0_MINTEMP 5
+
+#if defined(PB_BOCUSINI)
+  #define HEATER_0_MINTEMP -10
+#else
+  #define HEATER_0_MINTEMP 5
+#endif
+
 #define HEATER_1_MINTEMP 5
 #define HEATER_2_MINTEMP 5
 #define BED_MINTEMP 5
@@ -115,6 +121,8 @@
 
 #if defined(PB_MCF)
   #define HEATER_0_MAXTEMP 100
+#elif defined(PB_BOCUSINI)
+  #define HEATER_0_MAXTEMP 98
 #else
   #define HEATER_0_MAXTEMP 300
 #endif
@@ -199,7 +207,7 @@
 
 //this prevents dangerous Extruder moves, i.e. if the temperature is under the limit
 //can be software-disabled for whatever purposes by
-#if !defined(PB_MCF)
+#if !defined(PB_MCF) && !defined(PB_BOCUSINI)
 #define PREVENT_DANGEROUS_EXTRUDE
 //if PREVENT_DANGEROUS_EXTRUDE is on, you can still disable (uncomment) very long bits of extrusion separately.
 #define PREVENT_LENGTHY_EXTRUDE
@@ -282,6 +290,8 @@ const bool E_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Y_HOME_DIR 1
 #if defined(PB_MCF)
   #define Z_HOME_DIR 1
+#elif defined(PB_BOCUSINI)
+    #define Z_HOME_DIR 1
 #else
   #define Z_HOME_DIR -1
 #endif
@@ -309,11 +319,16 @@ const bool E_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #define X_MAX_POS_DEFAULT 230
   #define Y_MAX_POS_DEFAULT 160
   #define Z_MAX_POS_DEFAULT 81
-
   #define E_MAX_POS_DEFAULT 400
   #define E_MIN_POS_DEFAULT 0
-
+#elif defined(PB_BOCUSINI)
+  #define X_MAX_POS_DEFAULT 152
+  #define Y_MAX_POS_DEFAULT 152
+  #define Z_MAX_POS_DEFAULT 131
+  #define E_MAX_POS_DEFAULT 400
+  #define E_MIN_POS_DEFAULT 0
 #else
+
   #define X_MAX_POS_DEFAULT 152
   #define Y_MAX_POS_DEFAULT 152
   #define Z_MAX_POS_DEFAULT 152
@@ -325,7 +340,7 @@ const bool E_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_MAX_LENGTH (base_max_pos[2] - base_min_pos[2])
 //============================= Bed Auto Leveling ===========================
 
-#if !defined(PB_MCF)
+#if !defined(PB_MCF) && !defined(PB_BOCUSINI)
   #define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
 #endif
 
@@ -408,10 +423,14 @@ const bool E_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,406,406}
   #define DEFAULT_MAX_FEEDRATE          {125, 125, 12, 14}    // (mm/sec)
   #define DEFAULT_MAX_ACCELERATION      {200,200,30,3000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+#elif defined(PB_BOCUSINI)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,6666}
+  #define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}
+  #define DEFAULT_MAX_ACCELERATION      {200,200,30,3000}
 #else
   #define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,2020,96}
-  #define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}    // (mm/sec)
-  #define DEFAULT_MAX_ACCELERATION      {2000,2000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
+  #define DEFAULT_MAX_FEEDRATE          {125, 125, 5, 14}
+  #define DEFAULT_MAX_ACCELERATION      {2000,2000,30,10000}
 #endif
 
 #define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves

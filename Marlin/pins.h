@@ -137,6 +137,11 @@
   #define Z_MIN_PIN -1
   #define E_MIN_PIN 28
   #define E_MAX_PIN 30
+#elif defined(PB_BOCUSINI)
+  #define Z_MAX_PIN 36
+  #define Z_MIN_PIN -1
+  #define E_MIN_PIN 28
+  #define E_MAX_PIN 29
 #else
   #define Z_MAX_PIN -1
 #define Z_MIN_PIN 36

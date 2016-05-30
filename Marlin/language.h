@@ -3,7 +3,7 @@
 
 // NOTE: IF YOU CHANGE THIS FILE / MERGE THIS FILE WITH CHANGES
 //
-//   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h" 
+//   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h"
 //   ==> ALSO TRY ALL AVAILABLE "LANGUAGE_CHOICE" OPTIONS
 
 // Languages
@@ -24,6 +24,8 @@
 	#define MACHINE_NAME "Printrbot Plus"
 #elif defined(PB_MCF)
 	#define MACHINE_NAME "Magic Candy Factory"
+#elif defined(PB_BOCUSINI)
+	#define MACHINE_NAME "Bocusini"
 #else
 	#define MACHINE_NAME "Printrbot"
 #endif
